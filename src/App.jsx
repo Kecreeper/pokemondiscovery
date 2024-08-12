@@ -1,6 +1,22 @@
 import { useState } from 'react'
 import './App.css'
 
+const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
+
+async function getPokemonData(input) {
+  try {
+    const response = await fetch(pokeUrl + input);
+
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+    const json = await response.json();
+    return json;
+  } catch (error) {
+    console.error(error.message);
+  };
+}
+
 function App() {
   return (
     <div className='bg-white/75 mx-auto max-w-3xl rounded-xl grid grid-cols-1'>
