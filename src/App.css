@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: 'Pokemon';
+    src: url(/src/assets/Pokemon\ Solid.ttf);
+}

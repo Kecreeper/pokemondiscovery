@@ -5,7 +5,11 @@ export default {
     './index.html',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'pokemon': ['Pokemon']
+      },
+    },
   },
   plugins: [],
 }
