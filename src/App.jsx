@@ -139,7 +139,7 @@ function App() {
   }
 
   const queryPokemon = async function () {
-    if (pokemonInput != null) {
+    if (!pokemonInput == "") {
       const json = await getPokemonData(pokemonInput);
       setData(json);
     }
