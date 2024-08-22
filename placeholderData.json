@@ -1,0 +1,26 @@
+{
+    "name": "??? (error)",
+    "sprites": {
+        "front_default": "./placeholderPokemon.png"
+    },
+    "stats": [
+        {
+            "base_stat": 0
+        },
+        {
+            "base_stat": 0
+        },
+        {
+            "base_stat": 0
+        },
+        {
+            "base_stat": 0
+        },
+        {
+            "base_stat": 0
+        },
+        {
+            "base_stat": 0
+        }
+    ]
+}
