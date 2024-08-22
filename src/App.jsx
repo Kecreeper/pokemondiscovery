@@ -2,16 +2,16 @@ import { useState } from 'react'
 import {ThemeProvider, BaseStyles} from '@primer/react'
 import {ProgressBar} from '@primer/react'
 import './App.css'
+import placeholderData from '/placeholderData.json?url';
 
 const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
-const buttonCSS = 'font-semibold bg-white py-1 px-6 rounded-lg border border-b-black border-r-black'
+const buttonCSS = 'font-semibold text-blue-700 bg-amber-300 shadow-xl py-1 px-6 rounded-lg border border-b-black border-r-black hover:bg-amber-400 active:bg-amber-500'
 
 function StatBar({ num }) {
   let color;
   let color2;
   let percent = num;
   let percent2 = 100 - num;
-  console.log(num)
 
   if (num >= 100) {
     percent = "100";
@@ -51,11 +51,11 @@ function PokemonData({ data }) {
   const spd = stats[5].base_stat
   
   return (
-    <div className='mx-auto my-5 max-w-3xl bg-white/55 shadow-xl rounded-xl grid grid-cols-1'>
+    <div className='mx-auto my-5 max-w-3xl bg-white/55 backdrop-blur-sm shadow-xl rounded-xl grid grid-cols-1'>
       <div className='font-extrabold mt-4 -mb-2 text-4xl text-center'>
         {name}
       </div>
-      <div className='flex my-5'>
+      <div className='flex my-4'>
         <div className='flex flex-col items-start justify-center w-1/2'>
           <div className='py-3 px-16'>
             <StatBar num={ atk }/><span className='text-2xl font-mono font-semibold'> {atk} </span>
@@ -92,7 +92,7 @@ function PokemonData({ data }) {
           <img src={imgUrl} className='size-96 object-cover -m-16'/>
         </div>
       </div>
-      <div className='mx-auto my-5 text-center text-2xl font-mono font-bold'>
+      <div className='mx-auto mb-4 text-center text-2xl font-mono font-bold'>
         <StatBar num={hp}/>
         <div> {hp + " HP"} </div> 
       </div>
@@ -111,6 +111,7 @@ async function getPokemonData(input) {
     return json;
   } catch (error) {
     console.error(error.message);
+    return null
   };
 }
 
@@ -141,7 +142,12 @@ function App() {
   const queryPokemon = async function () {
     if (!pokemonInput == "") {
       const json = await getPokemonData(pokemonInput);
-      setData(json);
+      if (json != null) {
+        setData(json);
+      } else {
+        let whosthatpokemon = await (await fetch(placeholderData)).json()
+        setData(whosthatpokemon);
+      };
     }
   }
 
@@ -155,12 +161,19 @@ function App() {
       <BaseStyles>
         <>
           {data && <PokemonData data={data} />}
-          <div className='mx-auto max-w-md bg-white/55 shadow-xl rounded-xl grid grid-cols-1'>
-            <div className='text-2xl text-center py-4 font-bold'>
+          <div className='mx-auto max-w-md bg-white/55 backdrop-blur-sm shadow-xl rounded-xl grid grid-cols-1 space-y-3.5 pt-3 pb-4'>
+            <div className='drop-shadow-md text-2xl text-center font-bold'>
               Pokemon Discovery
             </div>
-            <input value={pokemonInput} onChange={handleChange} className='max-w-xl mx-auto rounded-md' />
-            <div className='flex justify-around py-4'>
+            <div className='max-w-md mx-auto py-1 px-2 shadow-md bg-black/35 rounded-md text-sm text-white text-center tracking-widest font-thin'>
+              API PROVIDED BY <a className='font-normal text-yellow-400 hover:text-blue-900' href='https://pokeapi.co/'>POKEAPI.CO</a>
+            </div>
+            <div className='mx-auto font-bold'>
+              Pokemon: &nbsp;
+              <input value={pokemonInput} onChange={handleChange} className='font-semibold max-w-xl mx-auto shadow-xl rounded-md hover:bg-amber-400 focus:outline-none focus:ring focus:ring-blue-700' />
+            </div>
+            
+            <div className='flex justify-around'>
               <button onClick={queryPokemon} className={buttonCSS}>Query Pokemon</button>
               <button onClick={randomPokemon} className={buttonCSS}>Random Pokemon</button>
             </div>
