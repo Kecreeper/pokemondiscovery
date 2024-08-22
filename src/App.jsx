@@ -1,102 +1,116 @@
 import { useState } from 'react'
 import {ThemeProvider, BaseStyles} from '@primer/react'
-import {ProgressBar} from '@primer/react'
+import StatBar from './components/StarBar'
 import './App.css'
 import placeholderData from '/placeholderData.json?url';
 
 const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
 const buttonCSS = 'font-semibold text-blue-700 bg-amber-300 shadow-xl py-1 px-6 rounded-lg border border-b-black border-r-black hover:bg-amber-400 active:bg-amber-500'
 
-function StatBar({ num }) {
-  let color;
-  let color2;
-  let percent = num;
-  let percent2 = 100 - num;
+/* function AbilityCard(abilityTable) {
 
-  if (num >= 100) {
-    percent = "100";
-    percent2 = "0";
-    color = "accent.emphasis";
-    color2 = "accent.muted";
-  } else if (num >= 75) {
-    color = "success.emphasis";
-    color2 = "success.muted";
-  } else if (num >= 45) {
-    color = "attention.emphasis";
-    color2 = "attention.muted";
-  } else {
-    color = "danger.emphasis";
-    color2 = "danger.muted";
+  return (
+    <div className='max-w-md p-3 rounded-xl bg-amber-400 ring ring-blue-700'>
+      asdfasdf
+    </div>
+  )
+}*/
+
+async function getAbilities(firstAbilitiesTable) {
+  let finalTable = [];
+
+  for (let i = 0; i < firstAbilitiesTable.length; i++) {
+    console.log(i);
+    try {
+      const response = await fetch(firstAbilitiesTable[i].ability.url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const json = await response.json();
+      finalTable[i] = json;
+    } catch (error) {
+      console.error(error.message);
+    };
   }
   
-  return (
-    <>
-      <ProgressBar inline sx={{ width: "200px" }} aria-valuenow={num}>
-        <ProgressBar.Item progress={percent} sx={{ backgroundColor: color }}/>
-        <ProgressBar.Item progress={percent2} sx={{ backgroundColor: color2 }}/>
-      </ProgressBar>
-    </>
-  )
-}
+  return finalTable;
+} 
 
 function PokemonData({ data }) {
-  const name = data.name.charAt(0).toUpperCase() + data.name.slice(1)
-  const imgUrl = data.sprites.front_default
-  const stats = data.stats
-  const hp = stats[0].base_stat
-  const atk = stats[1].base_stat
-  const def = stats[2].base_stat
-  const sAtk = stats[3].base_stat
-  const sDef = stats[4].base_stat
-  const spd = stats[5].base_stat
+  const abilities = data[1];
+  data = data[0];
+
+  const name = data.name.charAt(0).toUpperCase() + data.name.slice(1);
+  const imgUrl = data.sprites.front_default;
+
+  const stats = data.stats;
+  const hp = stats[0].base_stat;
+  const atk = stats[1].base_stat;
+  const def = stats[2].base_stat;
+  const sAtk = stats[3].base_stat;
+  const sDef = stats[4].base_stat;
+  const spd = stats[5].base_stat;
   
   return (
-    <div className='mx-auto my-5 max-w-3xl bg-white/55 backdrop-blur-sm shadow-xl rounded-xl grid grid-cols-1'>
-      <div className='font-extrabold mt-4 -mb-2 text-4xl text-center'>
-        {name}
-      </div>
-      <div className='flex my-4'>
-        <div className='flex flex-col items-start justify-center w-1/2'>
-          <div className='py-3 px-16'>
-            <StatBar num={ atk }/><span className='text-2xl font-mono font-semibold'> {atk} </span>
-            <div className='text-sm font-extrabold'>
-              ATK
+    <ThemeProvider>
+      <BaseStyles>
+        <div className='mx-auto my-5 max-w-3xl bg-white/55 backdrop-blur-sm shadow-xl rounded-xl grid grid-cols-1'>
+          <div className='font-extrabold mt-4 -mb-2 text-4xl text-center'>
+            {name}
+          </div>
+          <div className='flex my-4'>
+            <div className='flex flex-col items-start justify-center w-1/2'>
+                  <div className='py-3 px-16'>
+                    <StatBar num={ atk }/><span className='text-2xl font-mono font-semibold'> {atk} </span>
+                    <div className='text-sm font-extrabold'>
+                      ATK
+                    </div>
+                  </div>
+                  <div className='py-3 px-16'>
+                    <StatBar num={ def }/><span className='text-2xl font-mono font-semibold'> {def} </span>
+                    <div className='text-sm font-extrabold'>
+                      DEF
+                    </div>
+                  </div>
+                  <div className='py-3 px-16'>
+                    <StatBar num={ sAtk }/><span className='text-2xl font-mono font-semibold'> {sAtk} </span>
+                    <div className='text-sm font-extrabold'>
+                      ATK🌟
+                    </div>
+                  </div>
+                  <div className='py-3 px-16'>
+                    <StatBar num={ sDef }/><span className='text-2xl font-mono font-semibold'> {sDef} </span>
+                    <div className='text-sm font-extrabold'>
+                      DEF🌟
+                    </div>
+                  </div>
+                  <div className='py-3 px-16'>
+                    <StatBar num={ spd }/><span className='text-2xl font-mono font-semibold'> {spd} </span>
+                    <div className='text-sm font-extrabold'>
+                      SPD
+                    </div>
+                  </div>
+            </div>
+            <div className="w-1/2 flex justify-center items-center">
+              <img src={imgUrl} className='size-96 object-cover -m-16'/>
             </div>
           </div>
-          <div className='py-3 px-16'>
-            <StatBar num={ def }/><span className='text-2xl font-mono font-semibold'> {def} </span>
-            <div className='text-sm font-extrabold'>
-              DEF
-            </div>
+          <div className='flex justify-center space-x-4'>
+            {
+              abilities.map((ability) => (
+                <div key={ability.name} className='max-w-md p-3 rounded-xl bg-amber-400 ring ring-blue-700/65'>
+                  {ability.name}
+                </div>
+              ))
+            }
           </div>
-          <div className='py-3 px-16'>
-            <StatBar num={ sAtk }/><span className='text-2xl font-mono font-semibold'> {sAtk} </span>
-            <div className='text-sm font-extrabold'>
-              ATK🌟
-            </div>
-          </div>
-          <div className='py-3 px-16'>
-            <StatBar num={ sDef }/><span className='text-2xl font-mono font-semibold'> {sDef} </span>
-            <div className='text-sm font-extrabold'>
-              DEF🌟
-            </div>
-          </div>
-          <div className='py-3 px-16'>
-            <StatBar num={ spd }/><span className='text-2xl font-mono font-semibold'> {atk} </span>
-            <div className='text-sm font-extrabold'>
-              SPD
-            </div>
+          <div className='mx-auto mb-4 text-center text-2xl font-mono font-bold'>
+            <StatBar num={hp}/>
+            <div> {hp + " HP"} </div> 
           </div>
         </div>
-        <div className="w-1/2 flex justify-center items-center">
-          <img src={imgUrl} className='size-96 object-cover -m-16'/>
-        </div>
-      </div>
-      <div className='mx-auto mb-4 text-center text-2xl font-mono font-bold'>
-        <StatBar num={hp}/>
-        <div> {hp + " HP"} </div> 
-      </div>
-    </div>
+      </BaseStyles>
+    </ThemeProvider>
   )
 }
 
@@ -142,8 +156,9 @@ function App() {
   const queryPokemon = async function () {
     if (!pokemonInput == "") {
       const json = await getPokemonData(pokemonInput);
-      if (json != null) {
-        setData(json);
+      const json2 = await getAbilities(json.abilities);
+      if (json2 != null) {
+        setData([json, json2]);
       } else {
         let whosthatpokemon = await (await fetch(placeholderData)).json()
         setData(whosthatpokemon);
@@ -153,34 +168,31 @@ function App() {
 
   const randomPokemon = async function () {
     const json = await getRandomPokemon();
-    setData(json);
+    const json2 = await getAbilities(json.abilities);
+    setData([json, json2]);
   };
 
   return (
-    <ThemeProvider>
-      <BaseStyles>
-        <>
-          {data && <PokemonData data={data} />}
-          <div className='mx-auto max-w-md bg-white/55 backdrop-blur-sm shadow-xl rounded-xl grid grid-cols-1 space-y-3.5 pt-3 pb-4'>
-            <div className='drop-shadow-md text-2xl text-center font-bold'>
-              Pokemon Discovery
-            </div>
-            <div className='max-w-md mx-auto py-1 px-2 shadow-md bg-black/35 rounded-md text-sm text-white text-center tracking-widest font-thin'>
-              API PROVIDED BY <a className='font-normal text-yellow-400 hover:text-blue-900' href='https://pokeapi.co/'>POKEAPI.CO</a>
-            </div>
-            <div className='mx-auto font-bold'>
-              Pokemon: &nbsp;
-              <input value={pokemonInput} onChange={handleChange} className='font-semibold max-w-xl mx-auto shadow-xl rounded-md hover:bg-amber-400 focus:outline-none focus:ring focus:ring-blue-700' />
-            </div>
-            
-            <div className='flex justify-around'>
-              <button onClick={queryPokemon} className={buttonCSS}>Query Pokemon</button>
-              <button onClick={randomPokemon} className={buttonCSS}>Random Pokemon</button>
-            </div>
-          </div>
-        </>
-      </BaseStyles>
-    </ThemeProvider>
+    <>
+      {data && <PokemonData data={data} />}
+      <div className='mx-auto max-w-md bg-white/55 backdrop-blur-sm shadow-xl rounded-xl grid grid-cols-1 space-y-3.5 pt-3 pb-4'>
+        <div className='drop-shadow-md text-2xl text-center font-bold'>
+          Pokemon Discovery
+        </div>
+        <div className='max-w-md mx-auto py-1 px-2 shadow-md bg-black/35 rounded-md text-sm text-white text-center tracking-widest font-thin'>
+          API PROVIDED BY <a className='font-normal text-yellow-400 hover:text-blue-900' href='https://pokeapi.co/'>POKEAPI.CO</a>
+        </div>
+        <div className='mx-auto font-bold'>
+          Pokemon: &nbsp;
+          <input value={pokemonInput} onChange={handleChange} className='font-semibold max-w-xl mx-auto shadow-xl rounded-md hover:bg-amber-400 focus:outline-none focus:ring focus:ring-blue-700' />
+        </div>
+        
+        <div className='flex justify-around'>
+          <button onClick={queryPokemon} className={buttonCSS}>Query Pokemon</button>
+          <button onClick={randomPokemon} className={buttonCSS}>Random Pokemon</button>
+        </div>
+      </div>
+    </>
   )
 }
 
