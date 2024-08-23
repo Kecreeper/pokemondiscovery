@@ -8,20 +8,22 @@ const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
 const buttonCSS = 'font-semibold text-blue-700 bg-amber-300 shadow-xl py-1 px-6 rounded-lg border border-b-black border-r-black hover:bg-amber-400 active:bg-amber-500';
 
 function AbilityCard(ability) {
-  console.log(ability);
   ability = ability.ability;
   const name = ability.name.charAt(0).toUpperCase() + ability.name.slice(1);
-  let effect;
-  if (ability.effect_entries[1].effect != null) {
-    effect = ability.effect_entries[1].effect;
+  let effect = ability.effect_entries
+  if (effect.length != 0) {
+    effect = ability.effect_entries.filter(entry => entry.language.name === 'en')[0].effect;
   } else {
-    effect = "No info available"
+    effect = 'No effect entry available.'
   }
+  const flavorText = ability.flavor_text_entries.filter(entry => entry.language.name === 'en')[0].flavor_text;
+  console.log(effect);
 
   return (
-    <div className='max-w-xs m-5 p-3 rounded-xl bg-amber-400 ring ring-blue-700/65'>
-      <div className='text-center font-bold text-lg'> {name} </div>
-      <p>{effect}</p>
+    <div className='max-w-xs mx-2 py-2 px-3 rounded-xl bg-amber-400 ring ring-blue-700/65'>
+      <div className='text-center font-extrabold text-xl'> {name} </div>
+      <p className='italic'>{flavorText}</p>
+      <p className='font-semibold'>{effect}</p>
     </div>
   )
 }
@@ -100,8 +102,9 @@ function PokemonData({ data }) {
                     </div>
                   </div>
             </div>
-            <div className="w-1/2 flex justify-center items-center">
+            <div className="w-1/2 flex flex-col justify-center items-center">
               <img src={imgUrl} className='size-96 object-cover -m-16'/>
+              <div> asdfasdf </div>
             </div>
           </div>
           <div className='flex justify-evenly'>
