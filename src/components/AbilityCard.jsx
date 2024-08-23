@@ -1,3 +1,5 @@
+import '../App.css';
+
 export default function AbilityCard(ability) {
     ability = ability.ability;
     const name = ability.name.charAt(0).toUpperCase() + ability.name.slice(1);

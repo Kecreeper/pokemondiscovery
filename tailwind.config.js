@@ -2,6 +2,7 @@
 export default {
   content: [
     './src/*.jsx',
+    './src/components/*.jsx',
     './index.html',
   ],
   theme: {
