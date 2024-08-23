@@ -1,26 +1,35 @@
-import { useState } from 'react'
-import {ThemeProvider, BaseStyles} from '@primer/react'
-import StatBar from './components/StarBar'
-import './App.css'
+import { useState } from 'react';
+import { ThemeProvider, BaseStyles } from '@primer/react';
+import StatBar from './components/StarBar';
+import './App.css';
 import placeholderData from '/placeholderData.json?url';
 
 const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
-const buttonCSS = 'font-semibold text-blue-700 bg-amber-300 shadow-xl py-1 px-6 rounded-lg border border-b-black border-r-black hover:bg-amber-400 active:bg-amber-500'
+const buttonCSS = 'font-semibold text-blue-700 bg-amber-300 shadow-xl py-1 px-6 rounded-lg border border-b-black border-r-black hover:bg-amber-400 active:bg-amber-500';
 
-/* function AbilityCard(abilityTable) {
+function AbilityCard(ability) {
+  console.log(ability);
+  ability = ability.ability;
+  const name = ability.name.charAt(0).toUpperCase() + ability.name.slice(1);
+  let effect;
+  if (ability.effect_entries[1].effect != null) {
+    effect = ability.effect_entries[1].effect;
+  } else {
+    effect = "No info available"
+  }
 
   return (
-    <div className='max-w-md p-3 rounded-xl bg-amber-400 ring ring-blue-700'>
-      asdfasdf
+    <div className='max-w-xs m-5 p-3 rounded-xl bg-amber-400 ring ring-blue-700/65'>
+      <div className='text-center font-bold text-lg'> {name} </div>
+      <p>{effect}</p>
     </div>
   )
-}*/
+}
 
 async function getAbilities(firstAbilitiesTable) {
   let finalTable = [];
 
   for (let i = 0; i < firstAbilitiesTable.length; i++) {
-    console.log(i);
     try {
       const response = await fetch(firstAbilitiesTable[i].ability.url);
       if (!response.ok) {
@@ -95,12 +104,10 @@ function PokemonData({ data }) {
               <img src={imgUrl} className='size-96 object-cover -m-16'/>
             </div>
           </div>
-          <div className='flex justify-center space-x-4'>
+          <div className='flex justify-evenly'>
             {
               abilities.map((ability) => (
-                <div key={ability.name} className='max-w-md p-3 rounded-xl bg-amber-400 ring ring-blue-700/65'>
-                  {ability.name}
-                </div>
+                <AbilityCard key={ability.name} ability={ability} />
               ))
             }
           </div>
@@ -155,13 +162,20 @@ function App() {
 
   const queryPokemon = async function () {
     if (!pokemonInput == "") {
-      const json = await getPokemonData(pokemonInput);
-      const json2 = await getAbilities(json.abilities);
-      if (json2 != null) {
-        setData([json, json2]);
+      const jsonMain = await getPokemonData(pokemonInput);
+      if (jsonMain != null) {
+        const jsonAbilities = await getAbilities(jsonMain.abilities);
+        setData([jsonMain, jsonAbilities]);
+        /* if (jsonAbilities.length != 0) {
+          setData([jsonMain, jsonAbilities]);
+        } else {
+          const placeholderAbilities = await getAbilities(await ((await fetch(placeholderData)).json()).abilities);
+          setData([jsonMain, placeholderAbilities]);
+        } */
       } else {
-        let whosthatpokemon = await (await fetch(placeholderData)).json()
-        setData(whosthatpokemon);
+        const placeholder1 = await (await fetch(placeholderData)).json()
+        const placeholder2 = await getAbilities(placeholder1.abilities);
+        setData([placeholder1, placeholder2]);
       };
     }
   }
