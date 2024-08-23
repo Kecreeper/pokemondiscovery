@@ -7,6 +7,35 @@ import placeholderData from '/placeholderData.json?url';
 const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
 const buttonCSS = 'font-semibold text-blue-700 bg-amber-300 shadow-xl py-1 px-6 rounded-lg border border-b-black border-r-black hover:bg-amber-400 active:bg-amber-500';
 
+function TypesElement(type) {
+  const sprites = type.sprites
+
+  return (
+    <div>
+      asdfasdf
+    </div>
+  )
+}
+
+async function getTypes(firstTypesTable) {
+  let finalTable = [];
+
+  for (let i = 0; i < firstTypesTable.length; i++) {
+    try {
+      const response = await fetch(firstTypesTable[i].type.url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const json = await response.json();
+      finalTable[i] = json;
+    } catch (error) {
+      console.error(error.message);
+    };
+  }
+
+  return finalTable
+}
+
 function AbilityCard(ability) {
   ability = ability.ability;
   const name = ability.name.charAt(0).toUpperCase() + ability.name.slice(1);
@@ -17,7 +46,6 @@ function AbilityCard(ability) {
     effect = 'No effect entry available.'
   }
   const flavorText = ability.flavor_text_entries.filter(entry => entry.language.name === 'en')[0].flavor_text;
-  console.log(effect);
 
   return (
     <div className='max-w-xs mx-2 py-2 px-3 rounded-xl bg-amber-400 ring ring-blue-700/65'>
@@ -49,6 +77,7 @@ async function getAbilities(firstAbilitiesTable) {
 
 function PokemonData({ data }) {
   const abilities = data[1];
+  const types = data[2];
   data = data[0];
 
   const name = data.name.charAt(0).toUpperCase() + data.name.slice(1);
@@ -104,7 +133,13 @@ function PokemonData({ data }) {
             </div>
             <div className="w-1/2 flex flex-col justify-center items-center">
               <img src={imgUrl} className='size-96 object-cover -m-16'/>
-              <div> asdfasdf </div>
+              <div>
+                {
+                  types.map((type) => (
+                    <TypesElement key={type.name} type={type} />
+                  ))
+                }
+              </div>
             </div>
           </div>
           <div className='flex justify-evenly'>
@@ -168,17 +203,13 @@ function App() {
       const jsonMain = await getPokemonData(pokemonInput);
       if (jsonMain != null) {
         const jsonAbilities = await getAbilities(jsonMain.abilities);
-        setData([jsonMain, jsonAbilities]);
-        /* if (jsonAbilities.length != 0) {
-          setData([jsonMain, jsonAbilities]);
-        } else {
-          const placeholderAbilities = await getAbilities(await ((await fetch(placeholderData)).json()).abilities);
-          setData([jsonMain, placeholderAbilities]);
-        } */
+        const jsonTypes = await getTypes(jsonMain.types);
+        setData([jsonMain, jsonAbilities, jsonTypes]);
       } else {
         const placeholder1 = await (await fetch(placeholderData)).json()
         const placeholder2 = await getAbilities(placeholder1.abilities);
-        setData([placeholder1, placeholder2]);
+        const placeholder3 = await getTypes(placeholder1.types);
+        setData([placeholder1, placeholder2, placeholder3]);
       };
     }
   }
