@@ -1,21 +1,13 @@
 import { useState } from 'react';
 import { ThemeProvider, BaseStyles } from '@primer/react';
 import StatBar from './components/StarBar';
+import AbilityCard from './components/AbilityCard'
+import TypesElement from './components/TypesElement'
 import './App.css';
 import placeholderData from '/placeholderData.json?url';
 
 const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
 const buttonCSS = 'font-semibold text-blue-700 bg-amber-300 shadow-xl py-1 px-6 rounded-lg border border-b-black border-r-black hover:bg-amber-400 active:bg-amber-500';
-
-function TypesElement(type) {
-  const sprites = type.sprites
-
-  return (
-    <div>
-      asdfasdf
-    </div>
-  )
-}
 
 async function getTypes(firstTypesTable) {
   let finalTable = [];
@@ -34,26 +26,6 @@ async function getTypes(firstTypesTable) {
   }
 
   return finalTable
-}
-
-function AbilityCard(ability) {
-  ability = ability.ability;
-  const name = ability.name.charAt(0).toUpperCase() + ability.name.slice(1);
-  let effect = ability.effect_entries
-  if (effect.length != 0) {
-    effect = ability.effect_entries.filter(entry => entry.language.name === 'en')[0].effect;
-  } else {
-    effect = 'No effect entry available.'
-  }
-  const flavorText = ability.flavor_text_entries.filter(entry => entry.language.name === 'en')[0].flavor_text;
-
-  return (
-    <div className='max-w-xs mx-2 py-2 px-3 rounded-xl bg-amber-400 ring ring-blue-700/65'>
-      <div className='text-center font-extrabold text-xl'> {name} </div>
-      <p className='italic'>{flavorText}</p>
-      <p className='font-semibold'>{effect}</p>
-    </div>
-  )
 }
 
 async function getAbilities(firstAbilitiesTable) {
@@ -94,7 +66,7 @@ function PokemonData({ data }) {
   return (
     <ThemeProvider>
       <BaseStyles>
-        <div className='mx-auto my-5 max-w-3xl bg-white/55 backdrop-blur-sm shadow-xl rounded-xl grid grid-cols-1'>
+        <div className='mx-auto my-5 max-w-3xl bg-white/55 backdrop-blur-sm shadow-xl rounded-3xl grid grid-cols-1'>
           <div className='font-extrabold mt-4 -mb-2 text-4xl text-center'>
             {name}
           </div>
@@ -132,7 +104,7 @@ function PokemonData({ data }) {
                   </div>
             </div>
             <div className="w-1/2 flex flex-col justify-center items-center">
-              <img src={imgUrl} className='size-96 object-cover -m-16'/>
+              <img src={imgUrl} alt={name} title={name} className='size-96 object-cover -m-16'/>
               <div>
                 {
                   types.map((type) => (
@@ -217,18 +189,19 @@ function App() {
   const randomPokemon = async function () {
     const json = await getRandomPokemon();
     const json2 = await getAbilities(json.abilities);
-    setData([json, json2]);
+    const json3 = await getTypes(json.types);
+    setData([json, json2, json3]);
   };
 
   return (
     <>
       {data && <PokemonData data={data} />}
-      <div className='mx-auto max-w-md bg-white/55 backdrop-blur-sm shadow-xl rounded-xl grid grid-cols-1 space-y-3.5 pt-3 pb-4'>
+      <div className='mx-auto max-w-md bg-white/55 backdrop-blur-sm shadow-xl rounded-3xl grid grid-cols-1 space-y-3.5 pt-3 pb-4'>
         <div className='drop-shadow-md text-2xl text-center font-bold'>
           Pokemon Discovery
         </div>
-        <div className='max-w-md mx-auto py-1 px-2 shadow-md bg-black/35 rounded-md text-sm text-white text-center tracking-widest font-thin'>
-          API PROVIDED BY <a className='font-normal text-yellow-400 hover:text-blue-900' href='https://pokeapi.co/'>POKEAPI.CO</a>
+        <div className='max-w-md mx-auto py-1 px-2 shadow-md bg-black/35 rounded-lg  text-sm text-white text-center tracking-widest font-thin'>
+          API PROVIDED BY <a className='font-semibold text-yellow-400 hover:text-blue-900' href='https://pokeapi.co/'>POKEAPI.CO</a>
         </div>
         <div className='mx-auto font-bold'>
           Pokemon: &nbsp;
